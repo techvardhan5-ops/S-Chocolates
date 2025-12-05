@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - S-Chocolates</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <i class="fas fa-gift"></i>
+                <span>S-Chocolates</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="products.html">Products</a></li>
+                <li><a href="cart.html" class="cart-link">
+                    <i class="fas fa-shopping-cart"></i> Cart
+                    <span class="cart-count" id="cartCount">0</span>
+                </a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Payment Header -->
+    <section class="products-header">
+        <div class="container">
+            <h1 class="page-title">Checkout</h1>
+            <p class="page-subtitle">Complete your order details</p>
+        </div>
+    </section>
+
+    <!-- Payment Content -->
+    <section class="payment-section">
+        <div class="container payment-container">
+            <!-- Order Summary -->
+            <div class="order-summary">
+                <h2>Order Summary</h2>
+                <div id="orderItems" class="order-items"></div>
+                <div class="order-total">
+                    <span>Total:</span>
+                    <span id="orderTotal">₹0</span>
+                </div>
+            </div>
+
+            <!-- Checkout Form -->
+            <div class="checkout-form">
+                <h2>Delivery Details</h2>
+                <form id="checkoutForm">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Full Name *</label>
+                        <input type="text" id="name" required placeholder="Enter your full name">
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-phone"></i> Mobile Number *</label>
+                        <input type="tel" id="mobile" required placeholder="Enter 10-digit mobile number" pattern="[0-9]{10}">
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-home"></i> Delivery Address *</label>
+                        <textarea id="address" required placeholder="Enter complete delivery address" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-map-marker-alt"></i> Delivery Area *</label>
+                        <select id="area" required>
+                            <option value="">Select delivery area</option>
+                            <option value="Hyderabad">Hyderabad</option>
+                            <option value="Secunderabad">Secunderabad</option>
+                            <option value="Kukatpally">Kukatpally</option>
+                            <option value="Miyapur">Miyapur</option>
+                            <option value="Gachibowli">Gachibowli</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-credit-card"></i> Payment Method *</label>
+                        <select id="payment" required>
+                            <option value="Cash on Delivery">Cash on Delivery</option>
+                            <option value="UPI">UPI Payment</option>
+                            <option value="Card">Credit/Debit Card</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-large btn-block">
+                        <i class="fas fa-check"></i> Place Order
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- WhatsApp Float Button -->
+    <a href="https://wa.me/911234567890" target="_blank" class="whatsapp-float" title="Chat on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script src="script.js"></script>
+    <script>
+        function displayOrderSummary() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const orderItems = document.getElementById('orderItems');
+            const orderTotal = document.getElementById('orderTotal');
+
+            if (cart.length === 0) {
+                window.location.href = 'cart.html';
+                return;
+            }
+
+            orderItems.innerHTML = cart.map(item => `
+                <div class="order-item">
+                    <span>${item.name} × ${item.quantity}</span>
+                    <span>₹${item.price * item.quantity}</span>
+                </div>
+            `).join('');
+
+            const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            orderTotal.textContent = `₹${total}`;
+        }
+
+        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                window.location.href = 'products.html';
+                return;
+            }
+
+            const name = document.getElementById('name').value;
+            const mobile = document.getElementById('mobile').value;
+            const address = document.getElementById('address').value;
+            const area = document.getElementById('area').value;
+            const payment = document.getElementById('payment').value;
+
+            if (!name || !mobile || !address || !area || !payment) {
+                alert('Please fill all required fields');
+                return;
+            }
+
+            // Store order details
+            const orderDetails = {
+                name,
+                mobile,
+                address,
+                area,
+                payment,
+                cart,
+                total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
+                date: new Date().toLocaleString()
+            };
+
+            localStorage.setItem('lastOrder', JSON.stringify(orderDetails));
+            localStorage.setItem('cart', '[]');
+            
+            window.location.href = 'thankyou.html';
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            displayOrderSummary();
+            updateCartCount();
+        });
+    </script>
+</body>
+</html>
