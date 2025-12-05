@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - S-Chocolates</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <i class="fas fa-gift"></i>
+                <span>S-Chocolates</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="products.html" class="active">Products</a></li>
+                <li><a href="cart.html" class="cart-link">
+                    <i class="fas fa-shopping-cart"></i> Cart
+                    <span class="cart-count" id="cartCount">0</span>
+                </a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Products Header -->
+    <section class="products-header">
+        <div class="container">
+            <h1 class="page-title">Our Chocolate Collection</h1>
+            <p class="page-subtitle">Discover handcrafted perfection in every bite</p>
+        </div>
+    </section>
+
+    <!-- Search & Filter -->
+    <section class="search-filter">
+        <div class="container">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search your favorite chocolates...">
+            </div>
+            
+            <div class="category-filter">
+                <button class="filter-btn active" data-category="All">All</button>
+                <button class="filter-btn" data-category="Classic Chocolates">Classic Chocolates</button>
+                <button class="filter-btn" data-category="Celebration Boxes">Celebration Boxes</button>
+                <button class="filter-btn" data-category="Kids Specials">Kids Specials</button>
+                <button class="filter-btn" data-category="Sugar-Free & Healthy">Sugar-Free & Healthy</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Grid -->
+    <section class="products-section">
+        <div class="container">
+            <div class="products-grid" id="productsGrid"></div>
+            <div id="noResults" class="no-results" style="display: none;">
+                <i class="fas fa-search"></i>
+                <p>No products found matching your search</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- WhatsApp Float Button -->
+    <a href="https://wa.me/911234567890" target="_blank" class="whatsapp-float" title="Chat on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script src="script.js"></script>
+    <script>
+        let currentCategory = 'All';
+        let searchQuery = '';
+
+        function displayProducts() {
+            const grid = document.getElementById('productsGrid');
+            const noResults = document.getElementById('noResults');
+            
+            let filtered = products.filter(product => {
+                const matchesCategory = currentCategory === 'All' || product.category === currentCategory;
+                const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesCategory && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.style.display = 'none';
+                noResults.style.display = 'block';
+            } else {
+                grid.style.display = 'grid';
+                noResults.style.display = 'none';
+                
+                grid.innerHTML = filtered.map(product => `
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="${product.image}" alt="${product.name}">
+                        </div>
+                        <div class="product-info">
+                            <h3>${product.name}</h3>
+                            <p class="description">${product.description}</p>
+                            <div class="product-footer">
+                                <span class="price">₹${product.price}</span>
+                                <button class="btn btn-primary btn-small" onclick="addToCart(${product.id})">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Category Filter
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentCategory = this.dataset.category;
+                displayProducts();
+            });
+        });
+
+        // Search
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            searchQuery = e.target.value;
+            displayProducts();
+        });
+
+        // Add to Cart
+        window.addToCart = function(productId) {
+            const product = products.find(p => p.id === productId);
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            
+            // Show feedback
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Added';
+            btn.style.backgroundColor = '#10b981';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.backgroundColor = '';
+            }, 1000);
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            displayProducts();
+            updateCartCount();
+        });
+    </script>
+</body>
+</html>
