@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - S-Chocolates</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <i class="fas fa-gift"></i>
+                <span>S-Chocolates</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="products.html">Products</a></li>
+                <li><a href="cart.html" class="cart-link active">
+                    <i class="fas fa-shopping-cart"></i> Cart
+                    <span class="cart-count" id="cartCount">0</span>
+                </a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Cart Header -->
+    <section class="products-header">
+        <div class="container">
+            <h1 class="page-title">Your Shopping Cart</h1>
+        </div>
+    </section>
+
+    <!-- Cart Content -->
+    <section class="cart-section">
+        <div class="container">
+            <!-- Empty Cart -->
+            <div id="emptyCart" class="empty-cart" style="display: none;">
+                <i class="fas fa-shopping-cart"></i>
+                <h2>Your cart is empty</h2>
+                <p>Add some delicious chocolates to get started!</p>
+                <a href="products.html" class="btn btn-primary btn-large">
+                    Start Shopping <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- Cart Items -->
+            <div id="cartContent" style="display: none;">
+                <div class="cart-items" id="cartItems"></div>
+
+                <!-- Cart Total -->
+                <div class="cart-total">
+                    <div class="total-row">
+                        <span>Total Amount:</span>
+                        <span class="total-price" id="totalPrice">₹0</span>
+                    </div>
+                </div>
+
+                <!-- Cart Actions -->
+                <div class="cart-actions">
+                    <a href="products.html" class="btn btn-secondary btn-large">
+                        <i class="fas fa-arrow-left"></i> Continue Shopping
+                    </a>
+                    <button class="btn btn-danger btn-large" onclick="clearCart()">
+                        <i class="fas fa-trash"></i> Clear Cart
+                    </button>
+                    <a href="payment.html" class="btn btn-primary btn-large">
+                        Proceed to Checkout <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WhatsApp Float Button -->
+    <a href="https://wa.me/911234567890" target="_blank" class="whatsapp-float" title="Chat on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script src="script.js"></script>
+    <script>
+        function displayCart() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const emptyCart = document.getElementById('emptyCart');
+            const cartContent = document.getElementById('cartContent');
+            const cartItems = document.getElementById('cartItems');
+            const totalPrice = document.getElementById('totalPrice');
+
+            if (cart.length === 0) {
+                emptyCart.style.display = 'block';
+                cartContent.style.display = 'none';
+            } else {
+                emptyCart.style.display = 'none';
+                cartContent.style.display = 'block';
+
+                cartItems.innerHTML = cart.map(item => `
+                    <div class="cart-item">
+                        <img src="${item.image}" alt="${item.name}">
+                        <div class="cart-item-details">
+                            <h3>${item.name}</h3>
+                            <p class="item-price">₹${item.price} each</p>
+                        </div>
+                        <div class="quantity-control">
+                            <button onclick="updateQuantity(${item.id}, -1)">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <span>${item.quantity}</span>
+                            <button onclick="updateQuantity(${item.id}, 1)">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <div class="cart-item-total">
+                            <span class="item-total">₹${item.price * item.quantity}</span>
+                        </div>
+                        <button class="remove-btn" onclick="removeFromCart(${item.id})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `).join('');
+
+                const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                totalPrice.textContent = `₹${total}`;
+            }
+        }
+
+        window.updateQuantity = function(productId, change) {
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const item = cart.find(item => item.id === productId);
+            
+            if (item) {
+                item.quantity = Math.max(1, item.quantity + change);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                displayCart();
+                updateCartCount();
+            }
+        };
+
+        window.removeFromCart = function(productId) {
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            cart = cart.filter(item => item.id !== productId);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            displayCart();
+            updateCartCount();
+        };
+
+        window.clearCart = function() {
+            if (confirm('Are you sure you want to clear your cart?')) {
+                localStorage.setItem('cart', '[]');
+                displayCart();
+                updateCartCount();
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            displayCart();
+            updateCartCount();
+        });
+    </script>
+</body>
+</html>
