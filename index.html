@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S-Chocolates - Homemade Happiness</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <i class="fas fa-gift"></i>
+                <span>S-Chocolates</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="products.html">Products</a></li>
+                <li><a href="cart.html" class="cart-link">
+                    <i class="fas fa-shopping-cart"></i> Cart
+                    <span class="cart-count" id="cartCount">0</span>
+                </a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-overlay">
+            <div class="hero-content">
+                <i class="fas fa-candy-cane hero-icon"></i>
+                <h1 class="hero-title">S-Chocolates</h1>
+                <p class="hero-subtitle">Homemade Happiness</p>
+                <p class="hero-description">Crafted with love, delivered with care. Experience the finest handmade chocolates.</p>
+                <a href="products.html" class="btn btn-primary btn-large">
+                    Explore Our Collection <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Why Choose S-Chocolates</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon sky">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3>Fresh Daily</h3>
+                    <p>Made fresh every single day with the finest ingredients from around the world</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon emerald">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3>Handcrafted</h3>
+                    <p>Each piece lovingly crafted by expert chocolatiers with years of experience</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon sky">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <h3>Premium Packaging</h3>
+                    <p>Elegant gift-ready boxes that make every moment special and memorable</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon emerald">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3>Fast Delivery</h3>
+                    <p>Quick doorstep delivery across Hyderabad to keep your chocolates fresh</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Best Sellers -->
+    <section class="bestsellers">
+        <div class="container">
+            <h2 class="section-title white">Our Best Sellers</h2>
+            <p class="section-subtitle white">Handpicked favorites loved by thousands</p>
+            <div class="products-grid" id="bestSellers"></div>
+            <div class="text-center">
+                <a href="products.html" class="btn btn-white btn-large">
+                    View All Products <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- WhatsApp Float Button -->
+    <a href="https://wa.me/911234567890" target="_blank" class="whatsapp-float" title="Chat on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script src="script.js"></script>
+    <script>
+        // Display best sellers on home page
+        document.addEventListener('DOMContentLoaded', function() {
+            const bestSellers = products.slice(0, 4);
+            const container = document.getElementById('bestSellers');
+            
+            container.innerHTML = bestSellers.map(product => `
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="${product.image}" alt="${product.name}">
+                        <div class="product-badge">★ Popular</div>
+                    </div>
+                    <div class="product-info">
+                        <h3>${product.name}</h3>
+                        <p class="price">₹${product.price}</p>
+                    </div>
+                </div>
+            `).join('');
+            
+            updateCartCount();
+        });
+    </script>
+</body>
+</html>
